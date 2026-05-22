@@ -2,6 +2,8 @@ using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NominaGT.API.Data;
@@ -13,9 +15,12 @@ using NominaGT.API.Reports; // Aseg�rate de que este namespace sea el correcto
 var builder = WebApplication.CreateBuilder(args);
 
 // ============================================================
-//  Forzar URLs (independiente de launchSettings.json)
+//  URLs de escucha
 // ============================================================
-builder.WebHost.UseUrls("https://localhost:5001", "http://localhost:5000");
+// Por defecto escuchamos en HTTPS local (5001) y HTTP en TODAS las interfaces (5000).
+// El HTTP en 0.0.0.0:5000 permite que un tunel (ngrok/cloudflare) pueda llegar
+// desde otra computadora o desde internet a traves del SSL del tunel.
+builder.WebHost.UseUrls("https://localhost:5001", "http://0.0.0.0:5000");
 
 // ============================================================
 //  Dapper: snake_case -> PascalCase
@@ -137,7 +142,19 @@ var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactDev", policy =>
-        policy.WithOrigins(allowedOrigins)
+        policy.SetIsOriginAllowed(origin =>
+              {
+                  // Permite localhost en cualquier puerto + dominios de tuneles publicos
+                  if (allowedOrigins.Contains(origin)) return true;
+                  var host = new Uri(origin).Host;
+                  return host == "localhost"
+                      || host == "127.0.0.1"
+                      || host.EndsWith(".ngrok-free.app")
+                      || host.EndsWith(".ngrok.io")
+                      || host.EndsWith(".trycloudflare.com")
+                      || host.EndsWith(".loca.lt")        // localtunnel
+                      || host.EndsWith(".lhr.life");       // localhost.run
+              })
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials());
@@ -157,15 +174,37 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
-app.UseHttpsRedirection();
+// Respetar headers X-Forwarded-* (importante cuando un tunel/proxy HTTPS termina
+// el SSL al frente y comunica con el backend en HTTP).
+var fwd = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor
+                     | ForwardedHeaders.XForwardedProto
+                     | ForwardedHeaders.XForwardedHost,
+};
+// Aceptamos cualquier proxy (sin lista blanca) porque corremos en LAN/tunel privado.
+fwd.KnownNetworks.Clear();
+fwd.KnownProxies.Clear();
+app.UseForwardedHeaders(fwd);
+
+// NO usamos UseHttpsRedirection: el HTTP en :5000 debe ser accesible para
+// permitir que los tuneles HTTPS (ngrok, Cloudflare) hagan forward sin loop.
+
 app.UseCors("ReactDev");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<AuditMiddleware>();
+
+// ─── Servir el frontend (build de Vite copiado a wwwroot) ───
+// Sirve archivos estaticos /assets/* y al final, cualquier ruta no manejada
+// por la API cae al index.html (fallback de SPA con React Router).
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.MapControllers();
 
-// Health check
-app.MapGet("/", () => Results.Ok(new
+// Health check de la API (solo si /api/health, no choca con el SPA)
+app.MapGet("/api/health", () => Results.Ok(new
 {
     api = "NominaGT",
     version = "4.0",
@@ -173,6 +212,10 @@ app.MapGet("/", () => Results.Ok(new
     swagger = "/swagger",
     timestamp = DateTime.Now
 }));
+
+// Fallback de SPA: cualquier ruta que no sea /api/*, /swagger* o un archivo
+// estatico, devuelve index.html. Asi React Router maneja /empleados, /nomina, etc.
+app.MapFallbackToFile("index.html");
 
 Console.WriteLine();
 Console.WriteLine("=========================================");
