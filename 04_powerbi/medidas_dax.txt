@@ -1,0 +1,97 @@
+// ============================================================================
+// NominaGT v4 - Medidas DAX recomendadas para Power BI
+// Copia/pega cada medida en Power BI Desktop -> Modelo -> Nueva medida
+// ============================================================================
+
+// ─── KPIs principales ───
+
+Total Empleados =
+DISTINCTCOUNT(VW_PBI_NOMINA_MENSUAL[empleado_id])
+
+Total Neto =
+SUM(VW_PBI_NOMINA_MENSUAL[salario_neto])
+
+Total Ingresos =
+SUM(VW_PBI_NOMINA_MENSUAL[total_ingresos])
+
+Total Deducciones =
+SUM(VW_PBI_NOMINA_MENSUAL[total_deducciones])
+
+Promedio Salario =
+AVERAGE(VW_PBI_NOMINA_MENSUAL[salario_neto])
+
+
+// ─── Ratios ───
+
+% IGSS sobre ingresos =
+DIVIDE(
+    SUM(VW_PBI_NOMINA_MENSUAL[igss]),
+    SUM(VW_PBI_NOMINA_MENSUAL[total_ingresos])
+)
+
+% ISR sobre ingresos =
+DIVIDE(
+    SUM(VW_PBI_NOMINA_MENSUAL[isr]),
+    SUM(VW_PBI_NOMINA_MENSUAL[total_ingresos])
+)
+
+
+// ─── Comparativos ───
+
+YoY Neto =
+VAR ActualPeriodo = SUM(VW_PBI_NOMINA_MENSUAL[salario_neto])
+VAR PeriodoAnterior =
+    CALCULATE(
+        SUM(VW_PBI_NOMINA_MENSUAL[salario_neto]),
+        DATEADD(VW_PBI_NOMINA_MENSUAL[fecha_pago], -1, YEAR)
+    )
+RETURN DIVIDE(ActualPeriodo - PeriodoAnterior, PeriodoAnterior)
+
+
+MoM Neto =
+VAR ActualMes = SUM(VW_PBI_NOMINA_MENSUAL[salario_neto])
+VAR MesAnterior =
+    CALCULATE(
+        SUM(VW_PBI_NOMINA_MENSUAL[salario_neto]),
+        DATEADD(VW_PBI_NOMINA_MENSUAL[fecha_pago], -1, MONTH)
+    )
+RETURN DIVIDE(ActualMes - MesAnterior, MesAnterior)
+
+
+// ─── Por categoria ───
+
+Empleados por Estado =
+COUNTROWS(VW_PBI_EMPLEADOS)
+
+Empleados Activos =
+CALCULATE(
+    COUNTROWS(VW_PBI_EMPLEADOS),
+    VW_PBI_EMPLEADOS[estado] = "ACTIVO"
+)
+
+Top Departamento por Costo =
+VAR _maxCosto =
+    MAXX(
+        VALUES(VW_PBI_NOMINA_MENSUAL[departamento]),
+        CALCULATE(SUM(VW_PBI_NOMINA_MENSUAL[salario_neto]))
+    )
+RETURN
+    CALCULATE(
+        SELECTEDVALUE(VW_PBI_NOMINA_MENSUAL[departamento]),
+        FILTER(
+            VALUES(VW_PBI_NOMINA_MENSUAL[departamento]),
+            CALCULATE(SUM(VW_PBI_NOMINA_MENSUAL[salario_neto])) = _maxCosto
+        )
+    )
+
+
+// ─── Cartera de prestamos ───
+
+Total Cartera Prestamos =
+SUM(VW_PBI_PRESTAMOS[saldo_pendiente])
+
+Numero Prestamos Vigentes =
+CALCULATE(
+    COUNTROWS(VW_PBI_PRESTAMOS),
+    VW_PBI_PRESTAMOS[estado] = "VIGENTE"
+)
