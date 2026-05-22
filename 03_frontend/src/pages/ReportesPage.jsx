@@ -156,7 +156,7 @@ export default function ReportesPage() {
 
   if (!puedeExcel && !puedePdf) {
     return (
-      <div className="p-8 max-w-3xl mx-auto">
+      <div className="p-4 md:p-8 max-w-3xl mx-auto">
         <h1 className="text-2xl font-bold text-stone-800 mb-4">Reportes</h1>
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 flex items-start gap-3 text-amber-800">
           <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
@@ -167,7 +167,7 @@ export default function ReportesPage() {
   }
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex items-end justify-between mb-6">
         <div>

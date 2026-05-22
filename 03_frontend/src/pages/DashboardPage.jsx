@@ -241,7 +241,7 @@ export default function DashboardPage() {
   const greet = ROL_GREETING[user?.rolActivo] || ROL_GREETING.EMPLEADO;
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
         <div>

@@ -69,15 +69,6 @@ export default function LoginPage() {
             {loading ? 'Verificando...' : 'Ingresar'}
           </button>
         </form>
-
-        <div className="mt-6 p-3 rounded-lg bg-stone-100 text-xs">
-          <p className="font-semibold text-stone-500 uppercase mb-2">Usuarios demo</p>
-          <ul className="space-y-1 text-stone-600">
-            <li><code className="text-amber-600">admin</code> / admin123 — Admin</li>
-            <li><code className="text-amber-600">rrhh.op1</code> / rrhh123 — RRHH</li>
-            <li><code className="text-amber-600">nomina.op1</code> / nomina123 — Nomina</li>
-          </ul>
-        </div>
       </div>
     </div>
   );

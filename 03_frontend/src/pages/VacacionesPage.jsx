@@ -76,7 +76,7 @@ export default function VacacionesPage() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 className="text-2xl font-bold text-stone-800 flex items-center gap-2">
           <Calendar size={22} /> Vacaciones
@@ -114,7 +114,7 @@ export default function VacacionesPage() {
 
       {/* Tabla saldos para RRHH/ADMIN */}
       {verTodos && saldos.length > 0 && !filtroEmpleado && (
-        <div className="bg-white rounded-xl border border-stone-200 overflow-hidden mb-6">
+        <div className="bg-white rounded-xl border border-stone-200 overflow-x-auto mb-6">
           <div className="px-4 py-3 text-xs font-semibold text-stone-500 uppercase border-b border-stone-100 bg-stone-50">
             Saldos por empleado ({saldos.length})
           </div>
@@ -208,7 +208,7 @@ export default function VacacionesPage() {
           <p className="text-stone-500">No hay solicitudes de vacaciones.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-stone-200 overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-stone-50 border-b border-stone-100">
               <tr>

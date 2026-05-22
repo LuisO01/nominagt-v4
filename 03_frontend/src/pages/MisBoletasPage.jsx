@@ -46,7 +46,7 @@ export default function MisBoletasPage() {
   };
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-stone-800 flex items-center gap-2">
           <FileText size={22} /> Mis boletas de pago
@@ -85,7 +85,7 @@ export default function MisBoletasPage() {
           <p className="text-xs text-stone-400 mt-1">Aparecerán aquí cuando se calcule tu primera nómina.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-stone-200 overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-stone-50 border-b border-stone-100">
               <tr>

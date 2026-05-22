@@ -145,7 +145,7 @@ export default function EmpleadosPage() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 className="text-2xl font-bold text-stone-800 flex items-center gap-2">
@@ -222,7 +222,7 @@ export default function EmpleadosPage() {
             : 'No hay resultados para los filtros seleccionados.'}
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-stone-200 overflow-x-auto">
           <div className="px-4 py-2 text-xs text-stone-500 bg-stone-50 border-b border-stone-100">
             Mostrando <strong>{filtrados.length}</strong> de {empleados.length} empleados
           </div>

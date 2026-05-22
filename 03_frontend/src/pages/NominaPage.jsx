@@ -113,7 +113,7 @@ export default function NominaPage() {
   }, [hoy]);
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-4 md:p-8 max-w-6xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 className="text-2xl font-bold text-stone-800 flex items-center gap-2">
           <Calculator size={22} /> Nómina de Empleados
@@ -164,7 +164,7 @@ export default function NominaPage() {
           <Loader2 className="animate-spin inline mr-2" /> Cargando periodos...
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-stone-50 border-b border-stone-200">
               <tr>
